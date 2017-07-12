@@ -1,0 +1,43 @@
+LOG:  database system was shut down at 2017-07-11 18:50:44 EDT
+LOG:  MultiXact member wraparound protections are now enabled
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+FATAL:  database "taylorpeat" does not exist
+ERROR:  relation "public.films" does not exist
+STATEMENT:  ALTER TABLE ONLY public.films DROP CONSTRAINT films_director_id_fkey;
+ERROR:  relation "public.films" does not exist
+STATEMENT:  ALTER TABLE ONLY public.films DROP CONSTRAINT title_unique;
+ERROR:  relation "public.directors" does not exist
+STATEMENT:  ALTER TABLE ONLY public.directors DROP CONSTRAINT directors_pkey;
+ERROR:  relation "public.directors" does not exist
+STATEMENT:  ALTER TABLE public.directors ALTER COLUMN id DROP DEFAULT;
+ERROR:  table "films" does not exist
+STATEMENT:  DROP TABLE public.films;
+ERROR:  sequence "directors_id_seq" does not exist
+STATEMENT:  DROP SEQUENCE public.directors_id_seq;
+ERROR:  table "directors" does not exist
+STATEMENT:  DROP TABLE public.directors;
+FATAL:  database "converting_relationships" does not exist
+ERROR:  syntax error at or near ";" at character 51
+STATEMENT:  CREATE TABLE films_directors(film_id, director_id);
+ERROR:  syntax error at or near ";" at character 52
+STATEMENT:  CREATE TABLE films_directors (film_id, director_id);
+ERROR:  syntax error at or near ";" at character 52
+STATEMENT:  CREATE TABLE films_directors (film_id, director_id);
+ERROR:  syntax error at or near ";" at character 74
+STATEMENT:  CREATE TABLE films_directors(
+	film_id integer REFERENCES directors (id),
+	;
+	DAF;
+	);
+ERROR:  insert or update on table "films_directors" violates foreign key constraint "films_directors_director_id_fkey"
+DETAIL:  Key (director_id)=(9) is not present in table "directors".
+STATEMENT:  INSERT INTO films_directors(film_id, director_id)
+	VALUES (10, 9);
+ERROR:  syntax error at or near ")" at character 59
+STATEMENT:  INSERT INTO films_directors(film_id, director_id)
+	VALUES ();
+LOG:  autovacuum launcher shutting down
+LOG:  received smart shutdown request
+LOG:  shutting down
+LOG:  database system is shut down
