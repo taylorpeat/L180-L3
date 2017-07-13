@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.4
+-- Dumped from database version 9.6.3
 -- Dumped by pg_dump version 9.6.3
 
 SET statement_timeout = 0;
@@ -30,54 +30,29 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 SET search_path = public, pg_catalog;
 
---
--- Name: books_id_seq; Type: SEQUENCE; Schema: public; Owner: taylorpeat
---
-
-CREATE SEQUENCE books_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE books_id_seq OWNER TO taylorpeat;
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
--- Name: books; Type: TABLE; Schema: public; Owner: taylorpeat
+-- Name: customers; Type: TABLE; Schema: public; Owner: taylorpeat
 --
 
-CREATE TABLE books (
-    id integer DEFAULT nextval('books_id_seq'::regclass) NOT NULL,
-    title text NOT NULL,
-    author character varying(32) NOT NULL
+CREATE TABLE customers (
+    id integer NOT NULL,
+    name text NOT NULL,
+    payment_token character(8),
+    CONSTRAINT customers_payment_token_check CHECK ((payment_token ~ '^[A-Z]{8}$'::text))
 );
 
 
-ALTER TABLE books OWNER TO taylorpeat;
+ALTER TABLE customers OWNER TO taylorpeat;
 
 --
--- Name: books_categories; Type: TABLE; Schema: public; Owner: taylorpeat
+-- Name: customers_id_seq; Type: SEQUENCE; Schema: public; Owner: taylorpeat
 --
 
-CREATE TABLE books_categories (
-    book_id integer,
-    category_id integer
-);
-
-
-ALTER TABLE books_categories OWNER TO taylorpeat;
-
---
--- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: taylorpeat
---
-
-CREATE SEQUENCE categories_id_seq
+CREATE SEQUENCE customers_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -85,136 +60,180 @@ CREATE SEQUENCE categories_id_seq
     CACHE 1;
 
 
-ALTER TABLE categories_id_seq OWNER TO taylorpeat;
+ALTER TABLE customers_id_seq OWNER TO taylorpeat;
 
 --
--- Name: categories; Type: TABLE; Schema: public; Owner: taylorpeat
+-- Name: customers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: taylorpeat
 --
 
-CREATE TABLE categories (
-    id integer DEFAULT nextval('categories_id_seq'::regclass) NOT NULL,
-    name character varying(32) NOT NULL
+ALTER SEQUENCE customers_id_seq OWNED BY customers.id;
+
+
+--
+-- Name: customers_services; Type: TABLE; Schema: public; Owner: taylorpeat
+--
+
+CREATE TABLE customers_services (
+    customer_id integer,
+    service_id integer
 );
 
 
-ALTER TABLE categories OWNER TO taylorpeat;
+ALTER TABLE customers_services OWNER TO taylorpeat;
 
 --
--- Data for Name: books; Type: TABLE DATA; Schema: public; Owner: taylorpeat
+-- Name: services; Type: TABLE; Schema: public; Owner: taylorpeat
 --
 
-COPY books (id, title, author) FROM stdin;
-1	A Tale of Two Cities	Charles Dickens
-2	Harry Potter	J. K. Rowling
-3	Einstein: His Life and Universe	Walter Isaacson
-4	Sally Ride: America's First Woman in Space	Lynn Sherr
-5	Jane Eyre	Charlotte Bronte
-6	Vij's: Elegant and Inspired Indian Cuisine	Meeru Dhalwala and Vikram Vij
+CREATE TABLE services (
+    id integer NOT NULL,
+    description text NOT NULL,
+    price numeric(10,2) NOT NULL
+);
+
+
+ALTER TABLE services OWNER TO taylorpeat;
+
+--
+-- Name: services_id_seq; Type: SEQUENCE; Schema: public; Owner: taylorpeat
+--
+
+CREATE SEQUENCE services_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE services_id_seq OWNER TO taylorpeat;
+
+--
+-- Name: services_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: taylorpeat
+--
+
+ALTER SEQUENCE services_id_seq OWNED BY services.id;
+
+
+--
+-- Name: customers id; Type: DEFAULT; Schema: public; Owner: taylorpeat
+--
+
+ALTER TABLE ONLY customers ALTER COLUMN id SET DEFAULT nextval('customers_id_seq'::regclass);
+
+
+--
+-- Name: services id; Type: DEFAULT; Schema: public; Owner: taylorpeat
+--
+
+ALTER TABLE ONLY services ALTER COLUMN id SET DEFAULT nextval('services_id_seq'::regclass);
+
+
+--
+-- Data for Name: customers; Type: TABLE DATA; Schema: public; Owner: taylorpeat
+--
+
+COPY customers (id, name, payment_token) FROM stdin;
+1	Pat Johnson	XHGOAHEQ
+2	Nancy Monreal	JKWQPJKL
+3	Lynn Blake	KLZXWEEE
+5	Scott Lakso	UUEAPQPS
+6	Jim Pornot	XKJEYAZA
+7	John Doe	EYODHLCN
 \.
 
 
 --
--- Data for Name: books_categories; Type: TABLE DATA; Schema: public; Owner: taylorpeat
+-- Name: customers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: taylorpeat
 --
 
-COPY books_categories (book_id, category_id) FROM stdin;
+SELECT pg_catalog.setval('customers_id_seq', 7, true);
+
+
+--
+-- Data for Name: customers_services; Type: TABLE DATA; Schema: public; Owner: taylorpeat
+--
+
+COPY customers_services (customer_id, service_id) FROM stdin;
+1	1
 1	2
-1	4
-2	2
-2	3
+1	3
 3	1
+3	2
+3	3
+3	4
 3	5
-3	6
-4	5
-4	1
-4	7
+5	1
 5	2
-5	4
-6	8
+5	6
 6	1
-6	9
+6	6
+7	1
+7	2
+7	3
 \.
 
 
 --
--- Name: books_id_seq; Type: SEQUENCE SET; Schema: public; Owner: taylorpeat
+-- Data for Name: services; Type: TABLE DATA; Schema: public; Owner: taylorpeat
 --
 
-SELECT pg_catalog.setval('books_id_seq', 6, true);
-
-
---
--- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: taylorpeat
---
-
-COPY categories (id, name) FROM stdin;
-1	Nonfiction
-2	Fiction
-3	Fantasy
-4	Classics
-5	Biography
-6	Physics
-7	Space Exploration
-8	Cookbook
-9	South Asia
+COPY services (id, description, price) FROM stdin;
+1	Unix Hosting	5.95
+2	DNS	4.95
+3	Whois Registration	1.95
+4	High Bandwidth	15.00
+5	Business Support	250.00
+6	Dedicated Hosting	50.00
+8	One-to-One Training	999.00
 \.
 
 
 --
--- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: taylorpeat
+-- Name: services_id_seq; Type: SEQUENCE SET; Schema: public; Owner: taylorpeat
 --
 
-SELECT pg_catalog.setval('categories_id_seq', 9, true);
-
-
---
--- Name: books_categories books_categories_book_id_category_id_key; Type: CONSTRAINT; Schema: public; Owner: taylorpeat
---
-
-ALTER TABLE ONLY books_categories
-    ADD CONSTRAINT books_categories_book_id_category_id_key UNIQUE (book_id, category_id);
+SELECT pg_catalog.setval('services_id_seq', 8, true);
 
 
 --
--- Name: books books_pkey; Type: CONSTRAINT; Schema: public; Owner: taylorpeat
+-- Name: customers customers_pkey; Type: CONSTRAINT; Schema: public; Owner: taylorpeat
 --
 
-ALTER TABLE ONLY books
-    ADD CONSTRAINT books_pkey PRIMARY KEY (id);
-
-
---
--- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: taylorpeat
---
-
-ALTER TABLE ONLY categories
-    ADD CONSTRAINT categories_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY customers
+    ADD CONSTRAINT customers_pkey PRIMARY KEY (id);
 
 
 --
--- Name: books_categories books_categories_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: taylorpeat
+-- Name: customers_services customers_services_customer_id_services_id_key; Type: CONSTRAINT; Schema: public; Owner: taylorpeat
 --
 
-ALTER TABLE ONLY books_categories
-    ADD CONSTRAINT books_categories_book_id_fkey FOREIGN KEY (book_id) REFERENCES books(id);
-
-
---
--- Name: books_categories books_categories_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: taylorpeat
---
-
-ALTER TABLE ONLY books_categories
-    ADD CONSTRAINT books_categories_category_id_fkey FOREIGN KEY (category_id) REFERENCES categories(id);
+ALTER TABLE ONLY customers_services
+    ADD CONSTRAINT customers_services_customer_id_services_id_key UNIQUE (customer_id, service_id);
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: taylorpeat
+-- Name: services services_pkey; Type: CONSTRAINT; Schema: public; Owner: taylorpeat
 --
 
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM taylorpeat;
-GRANT ALL ON SCHEMA public TO taylorpeat;
-GRANT ALL ON SCHEMA public TO PUBLIC;
+ALTER TABLE ONLY services
+    ADD CONSTRAINT services_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: customers_services customers_services_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: taylorpeat
+--
+
+ALTER TABLE ONLY customers_services
+    ADD CONSTRAINT customers_services_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: customers_services customers_services_services_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: taylorpeat
+--
+
+ALTER TABLE ONLY customers_services
+    ADD CONSTRAINT customers_services_services_id_fkey FOREIGN KEY (service_id) REFERENCES services(id);
 
 
 --
